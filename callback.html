@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authorization – TheGoodNews World Wide</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 640px; margin: 80px auto; padding: 0 20px; color: #333; }
+    h2 { color: #1a1a1a; margin-bottom: 12px; }
+    .box { background: #f4f4f4; border: 1px solid #ddd; border-radius: 8px; padding: 16px 20px; margin-top: 20px; word-break: break-all; font-family: monospace; font-size: 0.95em; }
+    .label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .success { color: #2e7d32; } .error { color: #c62828; }
+    button { margin-top: 10px; padding: 6px 14px; font-size: 0.9em; cursor: pointer; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+  </style>
+</head>
+<body>
+  <h2 id="status"></h2>
+  <div id="output"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const status = document.getElementById('status');
+    const output = document.getElementById('output');
+
+    if (params.get('code')) {
+      status.className = 'success';
+      status.textContent = '✅ Authorization successful';
+      const code = params.get('code');
+      const state = params.get('state') || '';
+      output.innerHTML = `
+        <div class="box">
+          <div class="label">Authorization Code</div>
+          <div id="code">${code}</div>
+          <button onclick="navigator.clipboard.writeText('${code}').then(()=>this.textContent='Copied!')">Copy</button>
+        </div>
+        ${state ? `<div class="box"><div class="label">State</div><div>${state}</div></div>` : ''}
+        <p style="margin-top:20px;color:#555;">Copy the authorization code above and paste it back into your terminal to complete setup.</p>
+      `;
+    } else if (params.get('error')) {
+      status.className = 'error';
+      status.textContent = '❌ Authorization failed';
+      output.innerHTML = `<div class="box"><div class="label">Error</div><div>${params.get('error')}</div><div>${params.get('error_description') || ''}</div></div>`;
+    } else {
+      status.textContent = 'No authorization data found.';
+    }
+  </script>
+</body>
+</html>
